@@ -17,10 +17,15 @@ if __name__ == '__main__':
     itemSize = 100
     weight = [itemSize - i for i in range(itemSize)]
     needNum = 10
-    indexList = []
-    while len(indexList) < needNum:
-        index = getIndex(weight)
-        if index not in indexList:
-            indexList.append(index)
-    indexList.sort()
-    print(indexList)
+    sumList = [0 for i in range(itemSize)]
+    loop = 1000000
+    for i in range(loop):
+        indexList = []
+        while len(indexList) < needNum:
+            index = getIndex(weight)
+            if index not in indexList:
+                indexList.append(index)
+                sumList[index] += 1
+        indexList.sort()
+    for i in range(len(sumList)):
+        print(i, weight[i], sumList[i], sumList[i]/loop*100)
