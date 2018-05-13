@@ -1,31 +1,56 @@
 import random
+import matplotlib.pyplot as plt
 
-def getIndex(weight):
-    weightSum = sum(weight)
-    randomValue = random.randrange(weightSum)
+class weight():
+    def __init__(self, weightList):
+        cumulativeWeight = 0
+        self.cumulativeWeightList = []
+        for weight in weightList:
+            cumulativeWeight += weight
+            self.cumulativeWeightList.append(cumulativeWeight)
 
-    cumulativeSum = 0
-    index = -1
-    for w in weight:
-        cumulativeSum += w
-        if randomValue < cumulativeSum:
-            index = weight.index(w)
-            break
-    return index
+    def getIndex(self):
+        randomValue = random.randrange(self.cumulativeWeightList[-1])
+
+        index = -1
+        for cumulativeWeight in self.cumulativeWeightList:
+            if randomValue < cumulativeWeight:
+                index = self.cumulativeWeightList.index(cumulativeWeight)
+                break
+        return index
+
+    def getIndexList(self, needNum):
+        indexList = []
+        # 必要な個数が揃うまで繰り返す
+        while len(indexList) < needNum:
+            index = self.getIndex()
+            # 重複した場合スキップする
+            if index not in indexList:
+                indexList.append(index)
+        indexList.sort()
+        return indexList
 
 if __name__ == '__main__':
     itemSize = 100
-    weight = [itemSize - i for i in range(itemSize)]
     needNum = 10
+    weightList = [itemSize - i for i in range(itemSize)]
+    w = weight(weightList)
+
+    loop = 100000
     sumList = [0 for i in range(itemSize)]
-    loop = 1000000
     for i in range(loop):
-        indexList = []
-        while len(indexList) < needNum:
-            index = getIndex(weight)
-            if index not in indexList:
-                indexList.append(index)
-                sumList[index] += 1
-        indexList.sort()
+        indexList = w.getIndexList(needNum)
+        for index in indexList:
+            sumList[index] += 1
+
+    cumulativeWeight = 0
+    for i in range(itemSize):
+        cumulativeWeight += i + 1
+    print(cumulativeWeight)
+
+    print('index\tweight\tweight_ratio\tfrequency\tprobability')
     for i in range(len(sumList)):
-        print(i, weight[i], sumList[i], sumList[i]/loop*100)
+        print(str(i) + '\t' + str(weightList[i]) + '\t' + str(round(weightList[i]/cumulativeWeight*100, 3)) + '\t\t' + str(sumList[i]) + '\t\t' + str(round(sumList[i]/loop*100, 3)))
+    indexList = [i for i in range(itemSize)]
+    plt.plot(indexList, sumList)
+    plt.show()
